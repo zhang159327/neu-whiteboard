@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>东北大学 协同白板 — 实时协作绘图 & 聊天</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- ========== 加入画面 ========== -->
+  <div id="join-screen">
+    <div class="join-bg">
+      <div class="join-orb orb-1"></div>
+      <div class="join-orb orb-2"></div>
+      <div class="join-orb orb-3"></div>
+    </div>
+    <div class="join-card">
+      <div class="join-brand">
+        <!-- 东北大学 校徽 -->
+        <svg width="72" height="72" viewBox="0 0 100 100" fill="none" class="join-logo">
+          <!-- 外环 -->
+          <circle cx="50" cy="50" r="48" stroke="url(#neu-ring)" stroke-width="2.5"/>
+          <circle cx="50" cy="50" r="43" stroke="url(#neu-ring)" stroke-width="0.8" opacity="0.5"/>
+          <!-- 白山黑水 抽象 -->
+          <path d="M20 72 L35 38 L42 52 L50 30 L58 50 L68 26 L78 56 L82 72"
+                stroke="url(#neu-mountain)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <!-- 山峰积雪 -->
+          <path d="M46 34 L50 30 L54 34" stroke="#fff" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.7"/>
+          <path d="M64 30 L68 26 L72 30" stroke="#fff" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.7"/>
+          <!-- 水波纹 -->
+          <path d="M20 76 Q30 72 40 76 Q50 80 60 76 Q70 72 80 76"
+                stroke="url(#neu-water)" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.6"/>
+          <path d="M24 80 Q34 77 44 80 Q54 83 64 80 Q74 77 82 80"
+                stroke="url(#neu-water)" stroke-width="0.8" stroke-linecap="round" fill="none" opacity="0.4"/>
+          <!-- 建校年份 -->
+          <text x="50" y="93" text-anchor="middle" fill="#818CF8" font-size="8" font-weight="600" letter-spacing="2">1923</text>
+          <defs>
+            <linearGradient id="neu-ring" x1="0" y1="0" x2="100" y2="100"><stop stop-color="#1E3A5F"/><stop offset="1" stop-color="#3B82F6"/></linearGradient>
+            <linearGradient id="neu-mountain" x1="20" y1="72" x2="82" y2="26"><stop stop-color="#94A3B8"/><stop offset="1" stop-color="#E2E8F0"/></linearGradient>
+            <linearGradient id="neu-water" x1="20" y1="76" x2="82" y2="76"><stop stop-color="#3B82F6"/><stop offset="1" stop-color="#60A5FA"/></linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <h1>东北大学 协同白板</h1>
+      <p class="join-desc">多人实时协作绘图 · 在线聊天 · 语音通话 · AI 智能修正</p>
+      <div class="join-fields">
+        <div class="field">
+          <label for="username-input">昵称</label>
+          <input type="text" id="username-input" placeholder="输入你的昵称" maxlength="20" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="room-input">房间号</label>
+          <input type="text" id="room-input" placeholder="留空自动生成，如「星夜·蓝鲸」" maxlength="30" autocomplete="off">
+        </div>
+      </div>
+      <button id="join-btn">
+        进入房间
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <p class="join-tip">留空自动生成房间名 · 输入相同房间号即可协作</p>
+    </div>
+  </div>
+
+  <!-- ========== 工作区 ========== -->
+  <div id="workspace" style="display:none">
+    <!-- 工具栏 -->
+    <header id="toolbar">
+      <div class="tb-left">
+        <svg width="28" height="28" viewBox="0 0 100 100" fill="none" class="tb-logo">
+          <circle cx="50" cy="50" r="47" stroke="url(#tb-neu-ring)" stroke-width="2.5"/>
+          <path d="M22 68 L36 42 L44 54 L52 36 L60 52 L68 32 L78 58 L80 68"
+                stroke="url(#tb-neu-mtn)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+          <path d="M48 40 L52 36 L56 40" stroke="#fff" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.6"/>
+          <path d="M64 36 L68 32 L72 36" stroke="#fff" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.6"/>
+          <defs>
+            <linearGradient id="tb-neu-ring" x1="0" y1="0" x2="100" y2="100"><stop stop-color="#1E3A5F"/><stop offset="1" stop-color="#3B82F6"/></linearGradient>
+            <linearGradient id="tb-neu-mtn" x1="22" y1="68" x2="80" y2="32"><stop stop-color="#94A3B8"/><stop offset="1" stop-color="#E2E8F0"/></linearGradient>
+          </defs>
+        </svg>
+        <span id="room-label" class="room-name">—</span>
+        <span class="tb-divider"></span>
+      </div>
+
+      <div class="tb-tools">
+        <button class="tb-btn active" data-tool="pen" aria-label="画笔">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          <span>画笔</span>
+        </button>
+        <button class="tb-btn" data-tool="line" aria-label="直线">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="19" x2="19" y2="5"/></svg>
+          <span>直线</span>
+        </button>
+        <button class="tb-btn" data-tool="rect" aria-label="矩形">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+          <span>矩形</span>
+        </button>
+        <button class="tb-btn" data-tool="circle" aria-label="圆形">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg>
+          <span>圆形</span>
+        </button>
+        <button class="tb-btn" data-tool="text" aria-label="文字">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+          <span>文字</span>
+        </button>
+        <button class="tb-btn" data-tool="eraser" aria-label="橡皮擦">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16c-.8-.8-.8-2 0-2.8L14.6 1.6c.8-.8 2-.8 2.8 0L21 5.2c.8.8.8 2 0 2.8L12 17"/><line x1="6" y1="20" x2="10" y2="20"/></svg>
+          <span>橡皮</span>
+        </button>
+      </div>
+
+      <span class="tb-divider"></span>
+
+      <div class="tb-colors">
+        <button class="color-dot" style="background:#E8E8ED" data-color="#E8E8ED" aria-label="白色"></button>
+        <button class="color-dot" style="background:#6366F1" data-color="#6366F1" aria-label="靛蓝"></button>
+        <button class="color-dot" style="background:#10B981" data-color="#10B981" aria-label="翠绿"></button>
+        <button class="color-dot active" style="background:#F43F5E" data-color="#F43F5E" aria-label="玫红"></button>
+        <button class="color-dot" style="background:#F59E0B" data-color="#F59E0B" aria-label="琥珀"></button>
+        <button class="color-dot" style="background:#8B5CF6" data-color="#8B5CF6" aria-label="紫罗兰"></button>
+        <input type="color" id="color-picker" value="#F43F5E" title="自定义颜色" aria-label="自定义颜色">
+      </div>
+
+      <div class="tb-stroke">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor" class="stroke-icon-sm"><circle cx="6" cy="6" r="2"/></svg>
+        <input type="range" id="stroke-width" min="1" max="20" value="3" title="线条粗细" aria-label="线条粗细">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor" class="stroke-icon-lg"><circle cx="9" cy="9" r="6"/></svg>
+      </div>
+
+      <span class="tb-divider"></span>
+
+      <div class="tb-actions">
+        <button id="undo-btn" class="tb-act-btn" aria-label="撤销">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.5 17A9 9 0 102 11"/></svg>
+        </button>
+        <button id="clear-btn" class="tb-act-btn danger" aria-label="清空画布">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+        </button>
+      </div>
+
+      <div class="tb-spacer"></div>
+
+      <button id="shape-toggle" class="tb-chip active" aria-label="AI 形状修正">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <span>AI 修正</span>
+      </button>
+
+      <button id="voice-btn" class="tb-chip" aria-label="语音通话">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"/><path d="M19 10v2a7 7 0 01-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        <span>语音</span>
+      </button>
+
+      <button id="user-count-btn" class="tb-chip users" aria-label="在线成员">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        <span id="user-count">0</span>
+      </button>
+
+      <button id="chat-toggle-btn" class="tb-chip" aria-label="聊天面板">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        <span>聊天</span>
+      </button>
+    </header>
+
+    <!-- 主区域 -->
+    <div id="main-area">
+      <!-- 画布 -->
+      <main id="canvas-container">
+        <canvas id="whiteboard"></canvas>
+        <div id="text-input-overlay" style="display:none">
+          <input type="text" id="text-input" placeholder="输入文字，回车确认" maxlength="100">
+        </div>
+        <div id="draw-hint">点击并拖动开始绘图</div>
+      </main>
+
+      <!-- 聊天面板 -->
+      <aside id="chat-panel">
+        <div id="chat-header">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <span>消息</span>
+          <span id="chat-badge" class="chat-badge" hidden>新</span>
+        </div>
+        <div id="chat-messages">
+          <p class="chat-empty">— 暂无消息 —</p>
+        </div>
+        <div id="chat-input-area">
+          <input type="text" id="chat-input" placeholder="输入消息…" maxlength="500" autocomplete="off">
+          <button id="chat-send-btn" aria-label="发送">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+      </aside>
+    </div>
+
+    <!-- 状态栏 -->
+    <footer id="statusbar">
+      <span id="status-dot"></span>
+      <span id="status-msg">就绪</span>
+      <span class="sb-dot">·</span>
+      <span id="status-tool">画笔</span>
+      <span class="sb-dot">·</span>
+      <span id="status-color">#F43F5E</span>
+      <span class="sb-dot">·</span>
+      <span id="status-width">3px</span>
+    </footer>
+
+    <!-- 在线成员弹窗 -->
+    <div id="user-list-panel" hidden>
+      <div id="user-list-header">
+        <span>在线成员</span>
+        <span id="user-list-count"></span>
+      </div>
+      <div id="user-list"></div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast-container" aria-live="polite"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/js/state.js"></script>
+  <script src="/js/tools.js"></script>
+  <script src="/js/canvas.js"></script>
+  <script src="/js/shape-touchup.js"></script>
+  <script src="/js/chat.js"></script>
+  <script src="/js/webrtc.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
